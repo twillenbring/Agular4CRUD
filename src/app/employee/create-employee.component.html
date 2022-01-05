@@ -1,0 +1,160 @@
+<form class="form-horizontal" [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{pageTitle}}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="fullName">Full Name</label>
+                <div class="col-sm-8">
+                    <input id="fullName" type="text" class="form-control" formControlName="fullName">
+                    <span *ngIf="!employeeForm.get('fullName')?.valid && employeeForm.get('fullName')?.touched"
+                        class="error-block" style="color: red">
+                        Please provide full name
+                    </span>
+
+                    <span *ngIf="employeeForm.get('fullName')?.errors?.minlength ||
+                                   employeeForm.get('fullName')?.errors?.maxlength" class="error-block"
+                        style="color: red">
+                        Full Name must be greater than 2 characters and less than 10 characters
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label">Contact Preference</label>
+                <div class="col-md-8">
+                    <label class="radio-inline">
+                        <input type="radio" value="email" formControlName="contactPreference">
+                            Email
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="phone" formControlName="contactPreference">
+                            Phone
+                    </label>
+                </div>
+            </div>
+            
+            <div formGroupName="emailGroup">
+                <!--
+                <div *ngIf="emailGroup?.invalid">
+                    <span *ngIf="emailGroup?.errors?.emailMismatch">Emails don't match please enter again..</span>
+                </div>-->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="email">Email</label>
+                    <div class="col-sm-8">
+                        <input id="email" type="text" class="form-control" formControlName="email">
+                        
+                        <div *ngIf="email?.invalid && (email?.dirty || email?.touched)"
+                            class="alert alert-danger">
+                            <div *ngIf="email?.errors?.required">Email Is required</div>
+                            <div *ngIf="email?.errors?.emailDomain || email?.value !== '' ">This email domain not allowed</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="confirmEmail">Confirm Email</label>
+                    <div class="col-sm-8">
+                        <input id="confirmEmail" type="text" class="form-control" formControlName="confirmEmail">
+                        
+                        <div *ngIf="(confirmEmail?.touched || confirmEmail?.dirty) && confirmEmail?.invalid" class="alert alert-danger">
+                            <div *ngIf="confirmEmail?.errors?.required">Confirm Email is required</div>
+                            <div *ngIf="confirmEmail?.errors?.confirmedValidator">Email and confirm email must match</div>
+                        </div>
+                        
+                    </div>
+                </div> 
+            </div>
+
+            <!-- Phone input element -->
+            <div class="form-group" >
+                <label class="col-sm-2 control-label" for="phone">Phone</label>
+                <div class="col-sm-8">
+                    <input id="phone" type="text" class="form-control" formControlName="phone" placeholder="XXX-XXX-XXXX format">
+                    <span class="help-block" *ngIf="!employeeForm.get('phone')?.valid" style="color: red">
+                        Please enter valid phone number
+                    </span>
+                </div>
+            </div>
+
+            <div class="well">
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-4">
+                        <button type="button" class="btn btn-primary" (click)="addSkillButtonClick()"
+                            [disabled]="employeeForm.get('skills')?.invalid">
+                            Add Skill
+                        </button>
+                    </div>
+                </div>
+                <div formArrayName="skills" *ngFor="let skill of skillsArray.controls; let i = index">
+                    <hr *ngIf="i > 0" style="border-top: 1px solid black;">
+                    <div [formGroupName]="i">
+                        
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" [attr.for]="'skillName' + i">
+                                Skill
+                            </label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" [id]="'skillName' + i" placeholder="C#, Java, .Net, jquery..."
+                                    formControlName="skillName">
+                                
+                                <div *ngIf="skillName?.invalid && (skillName?.dirty || skillName?.touched)"
+                                    class="alert alert-danger">
+                                    <div *ngIf="skillName?.errors?.required">Skill Name is required</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" *ngIf="skillsArray.length > 1">
+                                <button type="button" class="btn btn-danger btn-sm" title="Delete Skill" (click)="deleteSkill(i)">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </div>
+                        </div>
+                        
+
+                    
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" [attr.for]="'experienceInYears' + i">Experience</label>
+                            <div class="col-sm-4">
+                                <input type="number" min="0" placeholder="Experience in Years" class="form-control"
+                                    [id]="'experienceInYears' + i" formControlName="experienceInYears">
+                                <div *ngIf="experienceYear?.invalid && (experienceYear?.dirty || experienceYear?.touched)"
+                                    class="alert alert-danger">
+                                    <span *ngIf="experienceYear?.errors?.required">Number of years is required</span>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" [attr.for]="'proficiency' + i">Proficiency</label>
+                            <div class="col-sm-8">
+                                <label class="radio-inline">
+                                    <input [id]="'proficiency' + i" type="radio" value="beginner" formControlName="proficiency">Beginner
+                                </label>
+                                <label class="radio-inline">
+                                    <input [id]="'proficiency' + i" type="radio" value="intermediate"
+                                        formControlName="proficiency">Intermediate
+                                </label>
+                                <label class="radio-inline">
+                                    <input [id]="'proficiency' + i" type="radio" value="advanced" formControlName="proficiency">Advanced
+                                </label>
+                                <div *ngIf="proficiency?.invalid && (proficiency?.dirty || proficiency?.touched)"
+                                    class="alert alert-danger">
+                                    <span *ngIf="proficiency?.errors?.required">Proficiency is required</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-footer">
+            <div class="btn-toolbar">
+                <button class="btn btn-primary" [disabled]="employeeForm.invalid" type="submit">Save</button>
+                <button class="btn btn-primary" type="button" (click)="onLoadDataClick()">Load Data</button>
+            </div>
+        </div>
+    </div>
+</form>
+Form Values : {{employeeForm?.value | json}}
